@@ -1,62 +1,126 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import { useState } from 'react';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { ScrollView } from 'react-native';
+import {useState} from 'react';
 
-import ImageViewer from './components/ImageViewer';
-import Button from './components/Button.js'
-import * as ImagePicker from 'expo-image-picker';
+import Button from './components/Button.js';
+import ImgButton from './components/imgButton.js'
+import ContentCom from './components/contentCom.js';
 import * as DocumentPicker from 'expo-document-picker';
+import { readRemoteFile } from 'react-native-csv';
+import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';  
 
-const PlaceholderImage = require('./assets/images/background-image.png');
+export default function commsApp() {
+  const [csvData, setCsvData] = useState(null);
 
-export default function App() {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const pickImageAsync = async() => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      quality:1,
+  let [fontsLoaded] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_700Bold,
+    Montserrat_800ExtraBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  const pickDocumentAsync = async() => {
+    let result = await DocumentPicker.getDocumentAsync({
+      type: 'text/csv'
     });
-
-    if(!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
-      console.log(result);
-    } else {
-      alert('You did not select any image.');
-    }
+    readRemoteFile(result.assets[0].uri,{
+      complete: (results) => {
+        setCsvData(results.data);
+      },
+      header: true,
+      delimiter: ',',
+    })
   };
+
   return (
+    <>
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <ImageViewer 
-          placeholderImageSource={PlaceholderImage} 
-          selectedImage={selectedImage} 
-        />
+
+      <View style={styles.header}>
+        <View style={styles.title}>
+          <Text style={styles.titleText}>HART COMMS INSPECTION</Text>
+          <ImgButton label='Upload CSV' onPress={pickDocumentAsync} imgName='upload' size={30}/>
+        </View>
+        <View style={styles.label}>
+          <Text style={styles.labelText}>Ref #</Text>
+          <Text style={[styles.labelText, {width:'70%'}]}>Notes</Text>
+          <Text style={styles.labelText}>SEL</Text>
+        </View>
       </View>
-      <View style={styles.footerContainer}>
-        <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-      </View>
-      <StatusBar style="auto" />
+
+        <ScrollView style={styles.content}>
+          
+          {csvData ? (
+            <ContentCom dataBig={csvData}/>
+          ) : (
+            <Text style={{color:'#FFF', textAlign: 'center', padding:10,}}>Please Import a CSV file!</Text>
+          )}
+          
+        </ScrollView>
     </View>
+
+  </>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
+    width:'100%',
+    height:'100%',
+    backgroundColor: '#0E0E0E',
   },
-  imageContainer: {
+
+  header: {
+    display: 'fixed',
+    width: '100%',
+  },
+
+  title: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    padding:15,
+    borderBottomWidth: 2,
+    borderBottomColor: '#FFF',
+  },
+
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#25292e',
+    textAlign: 'center',
+    fontFamily: 'Montserrat_800ExtraBold',
+    color:'#FFF',
+  },
+
+  label: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding:15,
+    borderBottomWidth: 2,
+    borderBottomColor: '#FFF',
+  },
+  labelText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontFamily: 'Montserrat_700Bold', 
+    width:'20%',
+    textAlign:'center',
+  },
+  content: {
     flex: 1,
-    paddingTop: 58,
   },
-  image: {
-    width: 320,
-    height: 440,
-    borderRadius: 18,
-  },
-  footerContainer: {
-    flex: 1/3,
-    alignItems: 'center'
-  },
-});
+};
+/*
+References:
+https://github.com/Bunlong/react-papaparse#-csvreader
+https://react-papaparse.js.org/docs#local-files
+
+
+*/
