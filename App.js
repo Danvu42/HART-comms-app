@@ -9,6 +9,10 @@ import * as DocumentPicker from 'expo-document-picker';
 import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';  
 
+/**
+ * The main component of the commsApp.
+ * @returns {JSX.Element} The JSX element of the commsApp.
+ */
 export default function commsApp() {
   const [csvData, setCsvData] = useState(null);
 
@@ -22,6 +26,10 @@ export default function commsApp() {
     return null;
   }
 
+  /**
+   * A function that allows the user to pick a CSV document from their device.
+   * @returns {Promise<void>} A promise that resolves when the user has picked a document.
+   */
   const pickDocumentAsync = async() => {
     let result = await DocumentPicker.getDocumentAsync({
       type: 'text/csv'
@@ -56,7 +64,7 @@ export default function commsApp() {
           {csvData ? (
             <ContentCom dataBig={csvData}/>
           ) : (
-            <Text style={{color:'#FFF', textAlign: 'center', padding:10,}}>Please Import a CSV file!</Text>
+            <Text style={{color:'#FFF', textAlign: 'center', padding:10, zIndex: -4}}>Please Import a CSV file!</Text>
           )}
           
         </ScrollView>
@@ -68,15 +76,17 @@ export default function commsApp() {
 
 const styles = {
   container: {
-    flex: 1,
     width:'100%',
     height:'100%',
     backgroundColor: '#0E0E0E',
+    flex: 1,
   },
 
   header: {
-    display: 'fixed',
+    position: 'fixed',
     width: '100%',
+    zIndex:10,
+    backgroundColor: '#0E0E0E',
   },
 
   title: {
@@ -115,6 +125,7 @@ const styles = {
   },
   content: {
     flex: 1,
+    top:130,
   },
 };
 /*

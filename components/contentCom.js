@@ -36,7 +36,7 @@ export default function ContentCom({ dataBig }) {
             )
         }
     } else {
-        console.log('no data');
+        console.log('error has occurred with data');
     }
     return totalReturn;
 

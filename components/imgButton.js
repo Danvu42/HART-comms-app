@@ -13,5 +13,7 @@ export default function ImgButton({ label, onPress, imgName, size }) {
 const styles = StyleSheet.create({
     button: {
         borderRadius: 20,
+        zIndex: 50,
     },
+    
 });
