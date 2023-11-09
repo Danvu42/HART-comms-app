@@ -50,7 +50,7 @@ export default function commsApp() {
       <View style={styles.header}>
         <View style={styles.title}>
           <Text style={styles.titleText}>HART COMMS INSPECTION</Text>
-          <ImgButton label='Upload CSV' onPress={pickDocumentAsync} imgName='upload' size={30}/>
+          <ImgButton label='Upload CSV' onPress={pickDocumentAsync} imgName='upload' size={25}/>
         </View>
         <View style={styles.label}>
           <Text style={styles.labelText}>Ref #</Text>
@@ -94,17 +94,21 @@ const styles = {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    padding:15,
+    alignItems: 'center',
+    paddingTop:15,
+    paddingBottom:15,
+    paddingLeft:50,
+    paddingRight:50,
     borderBottomWidth: 2,
     borderBottomColor: '#FFF',
   },
 
   titleText: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#25292e',
-    textAlign: 'center',
     fontFamily: 'Montserrat_800ExtraBold',
+    whiteSpace: 'nowrap',
     color:'#FFF',
   },
 
@@ -112,7 +116,10 @@ const styles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding:15,
+    paddingTop:15,
+    paddingBottom:15,
+    paddingLeft:50,
+    paddingRight:50,
     borderBottomWidth: 2,
     borderBottomColor: '#FFF',
   },
