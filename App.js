@@ -19,6 +19,7 @@ import NotePopup from './components/NotePopup.js';
 export default function commsApp() {
   const [csvData, setCsvData] = useState(null);
   const [checkboxState, setCheckboxState] = useState(false);
+  const [noteIndex, setNoteIndex] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   let [fontsLoaded] = useFonts({
@@ -61,8 +62,9 @@ export default function commsApp() {
     })
   };
 
-  const noteClick = () => {
+  const noteClick = (noteIndex) => {
     setModalVisible(!modalVisible);
+    setNoteIndex(noteIndex);
     console.log(modalVisible);
   };
 
@@ -80,7 +82,7 @@ export default function commsApp() {
           <Text style={styles.labelText}>SEL</Text>
         </View>
       </View>
-        <NotePopup onPress={noteClick} visible={modalVisible}/>
+        <NotePopup onPress={noteClick} visible={modalVisible} noteIndex={noteIndex}/>
 
         <ScrollView style={styles.content}>
           

@@ -13,7 +13,7 @@ export default function ContentCom({ dataBig, onPress }) {
             let data = dataBig[i];
             totalReturn.push(
                 <View style={styles.container}> <Text style={styles.refNum}>{data.ref_no}</Text>
-                    <Pressable style={styles.notes} onPress={onPress}>
+                    <Pressable style={styles.notes} onPress={onPress(i)}>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_dev_desc:</Text> {data.csc_device_desc}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_category:</Text> {data?.jc_categories}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_notes:</Text> {data?.jc_notes}</Text>
