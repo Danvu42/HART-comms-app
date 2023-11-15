@@ -1,25 +1,26 @@
-import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { StyleSheet, View, Pressable, Text, TextInput, FlatList } from 'react-native';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useState } from 'react';
 
-export default function ContentCom({ dataBig }) {
-    let bouncyCheckboxRef = null;
+export default function ContentCom({ dataBig, onPress }) {
     const [checkboxState, setCheckboxState] = useState(false);
+    let bouncyCheckboxRef = null;
     let totalReturn = [];
     console.log(dataBig);
     if (dataBig) {
+        /// Generates a new card for every row in the csv file
         for (let i = 0; i < dataBig.length; i++) {
             let data = dataBig[i];
             totalReturn.push(
                 <View style={styles.container}> <Text style={styles.refNum}>{data.ref_no}</Text>
-                    <View style={styles.notes}>
+                    <Pressable style={styles.notes} onPress={onPress}>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_dev_desc:</Text> {data.csc_device_desc}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_category:</Text> {data?.jc_categories}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_notes:</Text> {data?.jc_notes}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_pass:</Text> {data?.jc_pass}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_date:</Text> {data?.jc_note_date}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_ball_in:</Text> {data?.jc_ball_in_court}</Text>
-                    </View>
+                    </Pressable>
                     <View style={styles.checkbox}>
                         <BouncyCheckbox
                         style={{ left:8}}
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         justifyContent: 'space-between',
         padding: 15,
+        backgroundColor: '#0E0E0E',
     },
     refNum: {
         display: 'flex',

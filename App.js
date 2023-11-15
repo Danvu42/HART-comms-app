@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { Platform, StyleSheet, View, Pressable, Text } from 'react-native';
 import { ScrollView } from 'react-native';
 import {useState} from 'react';
 
@@ -6,8 +6,11 @@ import Button from './components/Button.js';
 import ImgButton from './components/imgButton.js'
 import ContentCom from './components/contentCom.js';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';  
+import { Modal } from 'react-native-web';
+import NotePopup from './components/NotePopup.js';
 
 /**
  * The main component of the commsApp.
@@ -15,6 +18,8 @@ import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800Extr
  */
 export default function commsApp() {
   const [csvData, setCsvData] = useState(null);
+  const [checkboxState, setCheckboxState] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   let [fontsLoaded] = useFonts({
     Montserrat_400Regular,
@@ -32,8 +37,21 @@ export default function commsApp() {
    */
   const pickDocumentAsync = async() => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: 'text/csv'
+      type: '*/*',
     });
+
+    // Grabbing the csv file will be different for android and web
+    const uri = FileSystem.cacheDirectory + result.name;
+    if (Platform.OS === 'android') {
+      await FileSystem.copyAsync({
+        from: result.uri,
+        to: uri,
+      })
+      result = uri;
+    }
+
+    console.log(result);
+    // Web will grab the file as a data uri, not using the file system
     readRemoteFile(result.assets[0].uri,{
       complete: (results) => {
         setCsvData(results.data);
@@ -43,10 +61,14 @@ export default function commsApp() {
     })
   };
 
+  const noteClick = () => {
+    setModalVisible(!modalVisible);
+    console.log(modalVisible);
+  };
+
   return (
     <>
     <View style={styles.container}>
-
       <View style={styles.header}>
         <View style={styles.title}>
           <Text style={styles.titleText}>HART COMMS INSPECTION</Text>
@@ -58,11 +80,13 @@ export default function commsApp() {
           <Text style={styles.labelText}>SEL</Text>
         </View>
       </View>
+        <NotePopup onPress={noteClick} visible={modalVisible}/>
 
         <ScrollView style={styles.content}>
           
+          // Checking if csvData is null or not
           {csvData ? (
-            <ContentCom dataBig={csvData}/>
+            <ContentCom dataBig={csvData} onPress={noteClick}/>
           ) : (
             <Text style={{color:'#FFF', textAlign: 'center', padding:10, zIndex: -4}}>Please Import a CSV file!</Text>
           )}
@@ -118,8 +142,8 @@ const styles = {
     justifyContent: 'space-between',
     paddingTop:15,
     paddingBottom:15,
-    paddingLeft:50,
-    paddingRight:50,
+    paddingLeft:30,
+    paddingRight:30,
     borderBottomWidth: 2,
     borderBottomColor: '#FFF',
   },
@@ -133,6 +157,7 @@ const styles = {
   content: {
     flex: 1,
     top:130,
+    backgroundColor: '#0E0E0E',
   },
 };
 /*
