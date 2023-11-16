@@ -3,7 +3,7 @@ import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800Extr
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import TextEditEntry from './TextEditEntry';
 
-export default function NotePopup({onPress, visible}) {
+export default function NotePopup({onPress, visible, noteIndex}) {
 
     return (
         <Modal
@@ -12,7 +12,7 @@ export default function NotePopup({onPress, visible}) {
             <View style={styles.modalContainer}>
                 <View style={styles.headerContainer}>
                     <FontAwesome name="arrow-left" size={25} color="#FFF" style={styles.exitButton} onPress={onPress}/>
-                    <Text style={styles.headerText}>Edit Row</Text>
+                    <Text style={styles.headerText}>Edit Ref {noteIndex}</Text>
                     <FontAwesome name="save" size={25} color="#FFF" style={styles.exitButton} onPress={onPress}/>
                 </View>
                 <View style={styles.bodyContainer}>

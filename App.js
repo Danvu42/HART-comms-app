@@ -62,10 +62,12 @@ export default function commsApp() {
     })
   };
 
-  const noteClick = (noteIndex) => {
+  const noteClick = (index) => {
+    console.log(noteIndex);
     setModalVisible(!modalVisible);
-    setNoteIndex(noteIndex);
-    console.log(modalVisible);
+    if (!modalVisible) {
+      setNoteIndex(index);
+    }
   };
 
   return (
@@ -86,7 +88,6 @@ export default function commsApp() {
 
         <ScrollView style={styles.content}>
           
-          // Checking if csvData is null or not
           {csvData ? (
             <ContentCom dataBig={csvData} onPress={noteClick}/>
           ) : (

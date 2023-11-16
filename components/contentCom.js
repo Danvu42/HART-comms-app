@@ -6,14 +6,13 @@ export default function ContentCom({ dataBig, onPress }) {
     const [checkboxState, setCheckboxState] = useState(false);
     let bouncyCheckboxRef = null;
     let totalReturn = [];
-    console.log(dataBig);
     if (dataBig) {
         /// Generates a new card for every row in the csv file
         for (let i = 0; i < dataBig.length; i++) {
             let data = dataBig[i];
             totalReturn.push(
                 <View style={styles.container}> <Text style={styles.refNum}>{data.ref_no}</Text>
-                    <Pressable style={styles.notes} onPress={onPress(i)}>
+                    <Pressable style={styles.notes} onPress={() => onPress(i)}>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_dev_desc:</Text> {data.csc_device_desc}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_category:</Text> {data?.jc_categories}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_notes:</Text> {data?.jc_notes}</Text>
