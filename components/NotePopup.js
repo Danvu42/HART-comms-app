@@ -29,7 +29,7 @@ export default function NotePopup({onPress, visible, data, noteIndex, saveCsv}) 
     }
     return (
         <Modal
-            transparent={true}
+            transparent={false}
             visible={visible}>
             <View style={styles.modalContainer}>
                 <View style={styles.headerContainer}>

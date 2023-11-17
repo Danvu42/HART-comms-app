@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View, Text, ScrollView } from 'react-native';
+import { Platform, StyleSheet, View, Text, ScrollView, Pressable } from 'react-native';
 import {useState} from 'react';
 
 import Button from './components/Button.js';
@@ -10,6 +10,7 @@ import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';  
 import NotePopup from './components/NotePopup.js';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Modal } from 'react-native-web';
 
 /**
  * The main component of the commsApp.
@@ -19,6 +20,7 @@ export default function commsApp() {
   const [csvData, setCsvData] = useState(null);
   const [noteIndex, setNoteIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [hotKeyVisible, setHotKeyVisible] = useState(false);
 
   let [fontsLoaded] = useFonts({
     Montserrat_400Regular,
@@ -64,6 +66,7 @@ export default function commsApp() {
     if (!modalVisible) {
       setNoteIndex(index);
     }
+    console.log(modalVisible);
   };
 
   const saveCsv = (textLocations) => {
@@ -95,8 +98,8 @@ export default function commsApp() {
           ) : (
             <Text style={{color:'#FFF', textAlign: 'center', padding:10, zIndex: -4}}>Please Import a CSV file!</Text>
           )}
-        <ScrollView style={styles.content}>
-          
+        <ScrollView style={styles.content} scrollEnabled={!modalVisible}>
+
           {csvData ? (
             <ContentCom dataBig={csvData} onPress={noteClick}/>
           ) : (
@@ -104,6 +107,29 @@ export default function commsApp() {
           )}
           
         </ScrollView>
+
+            <Pressable style={styles.hotKeyOpen} onPress={() => {
+              
+              setHotKeyVisible(!hotKeyVisible);
+              console.log(hotKeyVisible); 
+              }}>
+              <Text style={{color:'#FFF'}}>Hot Keys</Text>
+            </Pressable>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={hotKeyVisible} 
+        >
+          <View style={styles.modalContainer}>
+            <View style={{height:'50%', backgroundColor:'#FFF'}}>
+              <Pressable style={styles.hotKeyOpen} onPress={() => setHotKeyVisible(!hotKeyVisible)}>
+                <Text>Hot Keys</Text>
+              </Pressable>
+            </View>
+          </View>
+      </Modal>
+
     </View>
 
   </>
@@ -170,6 +196,16 @@ const styles = {
     flex: 1,
     top:130,
     backgroundColor: '#0E0E0E',
+    overflow: 'hidden',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  hotKeyOpen: {
+    display:'fixed',
+    height: 50,
+    color: '#FFF',
   },
 };
 /*
