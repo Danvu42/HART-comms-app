@@ -3,8 +3,30 @@ import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800Extr
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import TextEditEntry from './TextEditEntry';
 
-export default function NotePopup({onPress, visible, noteIndex}) {
+export default function NotePopup({onPress, visible, data, noteIndex, saveCsv}) {
+    if (!data) {
+        data = [];
+    }
+    class saveTextLocation {
+        constructor(label, text) {
+            this.label = label;
+            this.text = text;
+            this.index = noteIndex;
+        }
+    }
+    let textLocations = [];
 
+    const appendTextLocation = (label, text) => {
+        textLocations.push(new saveTextLocation(label, text));
+    };
+
+    let textEditEntries = ["csc_device_desc", "jc_categories", "jc_notes", "jc_pass", "jc_note_date", "jc_ball_in_court"];
+    let totalTextEntries = [];
+    for (let i = 0; i < textEditEntries.length; i++) {
+        totalTextEntries.push(
+            <TextEditEntry label={textEditEntries[i]} textPlaceholder={data[textEditEntries[i]]} sendText={appendTextLocation} key={i}/>
+        )
+    }
     return (
         <Modal
             transparent={true}
@@ -12,16 +34,11 @@ export default function NotePopup({onPress, visible, noteIndex}) {
             <View style={styles.modalContainer}>
                 <View style={styles.headerContainer}>
                     <FontAwesome name="arrow-left" size={25} color="#FFF" style={styles.exitButton} onPress={onPress}/>
-                    <Text style={styles.headerText}>Edit Ref {noteIndex}</Text>
-                    <FontAwesome name="save" size={25} color="#FFF" style={styles.exitButton} onPress={onPress}/>
+                    <Text style={styles.headerText}>Edit Ref {data.ref_no}</Text>
+                    <FontAwesome name="save" size={25} color="#FFF" style={styles.exitButton} onPress={() => saveCsv(textLocations)}/>
                 </View>
                 <View style={styles.bodyContainer}>
-                    <TextEditEntry label="jc_dev_desc"/>
-                    <TextEditEntry label="jc_category"/>
-                    <TextEditEntry label="jc_notes"/>
-                    <TextEditEntry label="jc_pass"/>
-                    <TextEditEntry label="jc_note_date"/>
-                    <TextEditEntry label="jc_ball_in_court"/>
+                    {totalTextEntries}
                 </View>
             </View>
         </Modal>

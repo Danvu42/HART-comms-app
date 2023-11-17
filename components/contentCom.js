@@ -7,11 +7,11 @@ export default function ContentCom({ dataBig, onPress }) {
     let bouncyCheckboxRef = null;
     let totalReturn = [];
     if (dataBig) {
-        /// Generates a new card for every row in the csv file
         for (let i = 0; i < dataBig.length; i++) {
             let data = dataBig[i];
             totalReturn.push(
-                <View style={styles.container}> <Text style={styles.refNum}>{data.ref_no}</Text>
+                <View style={styles.container} key={i}>
+                    <Text style={styles.refNum}>{data.ref_no}</Text>
                     <Pressable style={styles.notes} onPress={() => onPress(i)}>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_dev_desc:</Text> {data.csc_device_desc}</Text>
                         <Text style={{color:'#000'}}><Text style={{fontWeight: 'bold'}}>jc_category:</Text> {data?.jc_categories}</Text>
@@ -22,7 +22,7 @@ export default function ContentCom({ dataBig, onPress }) {
                     </Pressable>
                     <View style={styles.checkbox}>
                         <BouncyCheckbox
-                        style={{ left:8}}
+                            style={{ left:8}}
                             ref={(ref) => (bouncyCheckboxRef = ref)}
                             isChecked={checkboxState}
                             fillColor="#FFF"
@@ -38,7 +38,11 @@ export default function ContentCom({ dataBig, onPress }) {
     } else {
         console.log('error has occurred with data');
     }
-    return totalReturn;
+    return (
+        <View>
+            {totalReturn}
+        </View>
+    );
 
 }
 

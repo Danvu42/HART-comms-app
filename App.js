@@ -1,5 +1,4 @@
-import { Platform, StyleSheet, View, Pressable, Text } from 'react-native';
-import { ScrollView } from 'react-native';
+import { Platform, StyleSheet, View, Text, ScrollView } from 'react-native';
 import {useState} from 'react';
 
 import Button from './components/Button.js';
@@ -9,8 +8,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';  
-import { Modal } from 'react-native-web';
 import NotePopup from './components/NotePopup.js';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 /**
  * The main component of the commsApp.
@@ -18,8 +17,7 @@ import NotePopup from './components/NotePopup.js';
  */
 export default function commsApp() {
   const [csvData, setCsvData] = useState(null);
-  const [checkboxState, setCheckboxState] = useState(false);
-  const [noteIndex, setNoteIndex] = useState(false);
+  const [noteIndex, setNoteIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
 
   let [fontsLoaded] = useFonts({
@@ -51,7 +49,6 @@ export default function commsApp() {
       result = uri;
     }
 
-    console.log(result);
     // Web will grab the file as a data uri, not using the file system
     readRemoteFile(result.assets[0].uri,{
       complete: (results) => {
@@ -63,11 +60,20 @@ export default function commsApp() {
   };
 
   const noteClick = (index) => {
-    console.log(noteIndex);
     setModalVisible(!modalVisible);
     if (!modalVisible) {
       setNoteIndex(index);
     }
+  };
+
+  const saveCsv = (textLocations) => {
+    let tempCsvData = csvData;
+    for (let i = 0; i < textLocations.length; i++) {  
+      tempCsvData[textLocations[i].index][textLocations[i].label] = textLocations[i].text;
+    }
+    setCsvData(tempCsvData);
+    setModalVisible(!modalVisible);
+    textLocations = [];
   };
 
   return (
@@ -76,7 +82,7 @@ export default function commsApp() {
       <View style={styles.header}>
         <View style={styles.title}>
           <Text style={styles.titleText}>HART COMMS INSPECTION</Text>
-          <ImgButton label='Upload CSV' onPress={pickDocumentAsync} imgName='upload' size={25}/>
+            <FontAwesome name={"upload"} size={25} color="#FFF" onPress={pickDocumentAsync}/>
         </View>
         <View style={styles.label}>
           <Text style={styles.labelText}>Ref #</Text>
@@ -84,8 +90,11 @@ export default function commsApp() {
           <Text style={styles.labelText}>SEL</Text>
         </View>
       </View>
-        <NotePopup onPress={noteClick} visible={modalVisible} noteIndex={noteIndex}/>
-
+        {csvData ? (
+            <NotePopup onPress={noteClick} visible={modalVisible} data={csvData[noteIndex]} noteIndex={noteIndex} saveCsv={saveCsv}/>
+          ) : (
+            <Text style={{color:'#FFF', textAlign: 'center', padding:10, zIndex: -4}}>Please Import a CSV file!</Text>
+          )}
         <ScrollView style={styles.content}>
           
           {csvData ? (

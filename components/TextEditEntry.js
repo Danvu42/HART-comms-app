@@ -2,8 +2,8 @@ import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import { useState } from 'react';
 
-export default function TextEditEntry({ label}) {
-    const [text, onChangeText] = useState("Placeholder");
+export default function TextEditEntry({ label, textPlaceholder, sendText }) {
+    const [text, onChangeText] = useState(textPlaceholder);
 return (
     <View style={styles.textEditContainer}>
         <Text style={styles.textEditLabel}>{label}:</Text>
@@ -11,7 +11,7 @@ return (
         onChangeText={onChangeText}
         value={text}
         multiline={false}
-        
+        onSubmitEditing={() => sendText(label, text)} 
         />
     </View>
 );
