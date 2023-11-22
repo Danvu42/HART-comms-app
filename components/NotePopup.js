@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     },
     bodyContainer: {
         height:'80%',
-    }
+        margin:15,
+    },
 
 });
