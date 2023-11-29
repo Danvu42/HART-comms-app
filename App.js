@@ -4,13 +4,13 @@ import {useState} from 'react';
 import Button from './components/Button.js';
 import ImgButton from './components/imgButton.js'
 import ContentCom from './components/contentCom.js';
+import HotkeyModal from './components/HotkeyModal.js';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';  
 import NotePopup from './components/NotePopup.js';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Modal } from 'react-native-web';
 
 /**
  * The main component of the commsApp.
@@ -20,8 +20,9 @@ export default function commsApp() {
   const [csvData, setCsvData] = useState(null);
   const [noteIndex, setNoteIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [hotKeyVisible, setHotKeyVisible] = useState(false);
+  const [selectedNotes, setSelectedNotes] = useState([]);
 
+    console.log(selectedNotes);
   let [fontsLoaded] = useFonts({
     Montserrat_400Regular,
     Montserrat_700Bold,
@@ -69,13 +70,34 @@ export default function commsApp() {
     console.log(modalVisible);
   };
 
-  const saveCsv = (textLocations) => {
-    let tempCsvData = csvData;
-    for (let i = 0; i < textLocations.length; i++) {  
-      tempCsvData[textLocations[i].index][textLocations[i].label] = textLocations[i].text;
+  const selectCheckBox = (index, checkboxState) => {
+    if (checkboxState) {
+      setSelectedNotes(selectedNotes.filter((note) => note != index));
+    } else {
+      setSelectedNotes([...selectedNotes, index]);
     }
-    setCsvData(tempCsvData);
-    setModalVisible(!modalVisible);
+  };
+  const clearCheckBox = () => {
+    setSelectedNotes([]);
+    
+  };
+
+  const saveCsv = (textLocations) => {
+    const updatedCsvData = [...csvData]; // Create a new array and copy the existing data
+
+    for (let i = 0; i < textLocations.length; i++) {
+      const { index, label, text } = textLocations[i];
+      updatedCsvData[index] = {
+        ...updatedCsvData[index], // Copy the existing object
+        [label]: text, // Update the specific label with the new text
+      };
+    }
+
+    setCsvData(updatedCsvData); // Update the state with the new array
+
+    if (modalVisible) {
+      setModalVisible(!modalVisible);
+    }
     textLocations = [];
   };
 
@@ -101,53 +123,13 @@ export default function commsApp() {
         <ScrollView style={styles.content} scrollEnabled={!modalVisible}>
 
           {csvData ? (
-            <ContentCom dataBig={csvData} onPress={noteClick}/>
+            <ContentCom dataBig={csvData} onPress={noteClick} selectCheckBox={selectCheckBox}/>
           ) : (
             <Text style={{color:'#FFF', textAlign: 'center', padding:10, zIndex: -4}}>Please Import a CSV file!</Text>
           )}
           
         </ScrollView>
-
-        <Pressable style={styles.hotKeyClosed} onPress={() => {
-          
-          setHotKeyVisible(!hotKeyVisible);
-          console.log(hotKeyVisible); 
-          }}>
-          <Text style={styles.hotKeyClosedText}>Hot Keys</Text>
-        </Pressable>
-
-        <Modal
-          animationType="none"
-          transparent={true}
-          visible={hotKeyVisible} 
-        >
-          <View style={styles.hotKeyOpen}>
-            <Pressable onPress={() => setHotKeyVisible(!hotKeyVisible)}>
-              <Text style={styles.hotKeyOpenText}>Hot Keys</Text>
-            </Pressable>
-            <View style={styles.hotKeyButtonContainer}>
-              <Pressable style={styles.hotKeyButton}>
-                <Text style={styles.hotKeyButtonText}>Test Add 1</Text>
-              </Pressable>
-              <Pressable style={styles.hotKeyButton}>
-                <Text style={styles.hotKeyButtonText}>Test Add 2</Text>
-              </Pressable>
-              <Pressable style={styles.hotKeyButton}>
-                <Text style={styles.hotKeyButtonText}>Test Add 3</Text>
-              </Pressable>
-              <Pressable style={styles.hotKeyButton}>
-                <Text style={styles.hotKeyButtonText}>Test Add 4</Text>
-              </Pressable>
-              <Pressable style={styles.hotKeyButton}>
-                <Text style={styles.hotKeyButtonText}>Test Add 5</Text>
-              </Pressable>
-              <Pressable style={styles.hotKeyButton}>
-                <Text style={styles.hotKeyButtonText}>Test Add 6</Text>
-              </Pressable>
-            </View>
-          </View>
-      </Modal>
-
+        <HotkeyModal saveCsv={saveCsv} indices={selectedNotes}/>
     </View>
 
   </>
@@ -173,12 +155,10 @@ const styles = {
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
     paddingTop:15,
     paddingBottom:15,
-    paddingLeft:50,
-    paddingRight:50,
     borderBottomWidth: 2,
     borderBottomColor: '#FFF',
   },
@@ -216,69 +196,6 @@ const styles = {
     backgroundColor: '#0E0E0E',
     overflow: 'hidden',
   },
-  hotKeyClosed: {
-    display:'flex',
-    height: 50,
-    backgroundColor: '#FFF',
-    position:'fixed',
-    zIndex: 10,
-    bottom:0,
-    width:'100%',
-    borderTopWidth: 4,
-    borderTopColor: '#0E0E0E',
-  },
-  hotKeyOpen: {
-    display:'flex',
-    position:'fixed',
-    backgroundColor: '#0E0E0E',
-    zIndex: 20,
-    width:'100%',
-    height:'40%',
-    bottom:0,
-    borderTopWidth: 4,
-    borderTopColor: '#FFF',
-
-  },
-  hotKeyOpenText: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 18,
-    fontFamily: 'Montserrat_800ExtraBold',
-    top: 0,
-    margin:15,
-  },
-  hotKeyClosedText: {
-    color: '#0E0E0E',
-    textAlign: 'center',
-    paddingTop: 15,
-    fontSize: 18,
-    fontFamily: 'Montserrat_800ExtraBold',
-  },
-  hotKeyButtonContainer: {
-      display:'flex',
-      gap:15,
-      alignItems: 'center',
-      padding:15,
-      flexFlow:'row wrap',
-      width:'100%',
-      justifyContent:'center',
-  },
-  hotKeyButton: {
-      backgroundColor: '#FFF',
-      padding:10,
-      borderRadius: 5,
-      display:'flex',
-      height:60,
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-  hotKeyButtonText: {
-      color: '#0E0E0E',
-      textAlign: 'center',
-      fontSize: 18,
-      fontFamily: 'Montserrat_800ExtraBold',
-      whiteSpace: 'nowrap',
-  }
 };
 /*
 References:
