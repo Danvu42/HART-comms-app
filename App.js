@@ -100,6 +100,25 @@ export default function commsApp() {
     }
     textLocations = [];
   };
+  
+  const saveAddCsv = (textLocations) => {
+    const updatedCsvData = [...csvData]; // Create a new array and copy the existing data
+
+    for (let i = 0; i < textLocations.length; i++) {
+      const { index, label, text } = textLocations[i];
+      updatedCsvData[index] = {
+        ...updatedCsvData[index], // Copy the existing object
+        [label]: updatedCsvData[index][label] + ' ' + text, // Update the specific label with the new text
+      };
+    }
+
+    setCsvData(updatedCsvData); // Update the state with the new array
+
+    if (modalVisible) {
+      setModalVisible(!modalVisible);
+    }
+    textLocations = [];
+  };
 
   return (
     <>
@@ -129,7 +148,7 @@ export default function commsApp() {
           )}
           
         </ScrollView>
-        <HotkeyModal saveCsv={saveCsv} indices={selectedNotes}/>
+        <HotkeyModal saveCsv={saveAddCsv} indices={selectedNotes}/>
     </View>
 
   </>

@@ -2,6 +2,7 @@
 import { StyleSheet, View, Pressable, Text, Modal } from 'react-native';
 import {useState} from 'react';
 import FontAwesome from "@expo/vector-icons/FontAwesome"
+import Hotkey from './Hotkey.js';
 
 export default function HotKeyModal({ saveCsv, indices }) {
     const [hotKeyVisible, setHotKeyVisible] = useState(false);
@@ -13,13 +14,27 @@ export default function HotKeyModal({ saveCsv, indices }) {
         }
     }
     let textLocations = [];
+
     const hotKeyPress = (label, text) => {
+        if (indices.length == 0) {
+            return;
+        }
         for (let i = 0; i < indices.length; i++) {
             textLocations.push(new saveTextLocation(label, text, indices[i]));
         }
         console.log(textLocations);
         saveCsv(textLocations);
     };
+
+    let hotKeyArray = ["good", "cable pulled", "cable not pulled", "device installed", "device not installed", "device not labeled", "device labeled", "not installed"];
+    let totalHotkeyReturn = [];
+
+    for (let i = 0; i < hotKeyArray.length; i++) {
+        totalHotkeyReturn.push(
+            <Hotkey hotKey={hotKeyArray[i]} hotKeyPress={hotKeyPress} />
+        );
+    }
+
     return (
 
         <View style={styles.modalContainer}>
@@ -39,24 +54,7 @@ export default function HotKeyModal({ saveCsv, indices }) {
                         <Text style={styles.hotKeyOpenText}>Hot Keys</Text>
                     </Pressable>
                     <View style={styles.hotKeyButtonContainer}>
-                        <Pressable style={styles.hotKeyButton} onPress={() => {hotKeyPress("jc_category", "Test Add 1")}}>
-                            <Text style={styles.hotKeyButtonText}>Test Add 1</Text>
-                        </Pressable>
-                        <Pressable style={styles.hotKeyButton}>
-                            <Text style={styles.hotKeyButtonText}>Test Add 2</Text>
-                        </Pressable>
-                        <Pressable style={styles.hotKeyButton}>
-                            <Text style={styles.hotKeyButtonText}>Test Add 3</Text>
-                        </Pressable>
-                        <Pressable style={styles.hotKeyButton}>
-                            <Text style={styles.hotKeyButtonText}>Test Add 4</Text>
-                        </Pressable>
-                        <Pressable style={styles.hotKeyButton}>
-                            <Text style={styles.hotKeyButtonText}>Test Add 5</Text>
-                        </Pressable>
-                        <Pressable style={styles.hotKeyButton}>
-                            <Text style={styles.hotKeyButtonText}>Test Add 6</Text>
-                        </Pressable>
+                        {totalHotkeyReturn}
                     </View>
                 </View>
             </Modal>
@@ -108,25 +106,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         gap: 15,
         alignItems: 'center',
-        padding: 15,
         flexFlow: 'row wrap',
         width: '100%',
         justifyContent: 'center',
     },
-    hotKeyButton: {
-        backgroundColor: '#FFF',
-        padding: 10,
-        borderRadius: 5,
-        display: 'flex',
-        height: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    hotKeyButtonText: {
-        color: '#0E0E0E',
-        textAlign: 'center',
-        fontSize: 18,
-        fontFamily: 'Montserrat_800ExtraBold',
-        whiteSpace: 'nowrap',
-    }
 });
