@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         position: 'fixed',
         backgroundColor: '#0E0E0E',
-        zIndex: 20,
+        zIndex: 300,
         width: '100%',
         height: '40%',
         bottom: 0,
