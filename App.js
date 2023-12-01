@@ -42,6 +42,7 @@ export default function commsApp() {
   const pickDocumentAsync = async () => {
     let result = await DocumentPicker.getDocumentAsync({
       type: '*/*',
+      copyToCacheDirectory:true,
     });
 
     // Grabbing the csv file will be different for android and web
@@ -50,18 +51,22 @@ export default function commsApp() {
       await FileSystem.copyAsync({
         from: result.uri,
         to: uri,
-      })
+      });
       result = uri;
     }
 
     // Web will grab the file as a data uri, not using the file system
     readRemoteFile(result.assets[0].uri, {
       complete: (results) => {
-        setCsvData(results.data);
+        if (results && results.data) {
+          setCsvData(results.data);
+        } else {
+          console.error('Failed to read CSV file');
+        }
       },
       header: true,
       delimiter: ',',
-    })
+    });
   };
 
   const noteClick = (index) => {
