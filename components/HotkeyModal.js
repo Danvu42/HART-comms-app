@@ -1,11 +1,11 @@
 
 import { StyleSheet, View, Pressable, Text, Modal } from 'react-native';
 import {useState} from 'react';
-import FontAwesome from "@expo/vector-icons/FontAwesome"
 import Hotkey from './Hotkey.js';
 
 export default function HotKeyModal({ saveCsv, indices }) {
     const [hotKeyVisible, setHotKeyVisible] = useState(false);
+    const [mode, setMode] = useState("add");
     class saveTextLocation {
         constructor(label, text, index) {
             this.label = label;
@@ -22,8 +22,19 @@ export default function HotKeyModal({ saveCsv, indices }) {
         for (let i = 0; i < indices.length; i++) {
             textLocations.push(new saveTextLocation(label, text, indices[i]));
         }
-        console.log(textLocations);
-        saveCsv(textLocations);
+        if (mode == "add") {
+            saveCsv(textLocations, "add");
+        } else {
+            saveCsv(textLocations, "del");
+        }
+    };
+
+    const toggleMode = () => {
+        if (mode == "add") {
+            setMode("del");
+        } else {
+            setMode("add");
+        }
     };
 
     let hotKeyArray = ["good", "cable pulled", "cable not pulled", "device installed", "device not installed", "device not labeled", "device labeled", "not installed"];
@@ -31,7 +42,7 @@ export default function HotKeyModal({ saveCsv, indices }) {
 
     for (let i = 0; i < hotKeyArray.length; i++) {
         totalHotkeyReturn.push(
-            <Hotkey hotKey={hotKeyArray[i]} hotKeyPress={hotKeyPress} />
+            <Hotkey key={i} hotKey={hotKeyArray[i]} hotKeyPress={hotKeyPress} />
         );
     }
 
@@ -50,9 +61,14 @@ export default function HotKeyModal({ saveCsv, indices }) {
                 visible={hotKeyVisible}
             >
                 <View style={styles.hotKeyOpen}>
-                    <Pressable onPress={() => { setHotKeyVisible(!hotKeyVisible) }}>
-                        <Text style={styles.hotKeyOpenText}>Hot Keys</Text>
-                    </Pressable>
+                    <View style={styles.hotKeyHeader}>
+                        <Pressable onPress={() => { setHotKeyVisible(!hotKeyVisible) }}>
+                            <Text style={styles.hotKeyOpenText}>Hot Keys</Text>
+                        </Pressable>
+                        <Pressable style={styles.hotKeyButton} onPress={toggleMode}>
+                            <Text style={styles.hotKeyButtonText}>Mode: {mode}</Text>
+                        </Pressable>
+                    </View>
                     <View style={styles.hotKeyButtonContainer}>
                         {totalHotkeyReturn}
                     </View>
@@ -110,4 +126,30 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
     },
+    hotKeyHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding:15,
+        alignItems: 'center',
+    },
+    hotKeyButton: {
+        backgroundColor: '#FFF',
+        padding: 0,
+        borderRadius: 5,
+        height: 30,
+        width: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    hotKeyButtonText: {
+        color: '#0E0E0E',
+        textAlign: 'center',
+        fontSize: 15,
+        fontFamily: 'Montserrat_800ExtraBold',
+        whiteSpace: 'nowrap',
+    },
+
 });

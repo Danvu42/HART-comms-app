@@ -2,10 +2,7 @@ import { StyleSheet, View, Pressable, Text, TextInput, FlatList } from 'react-na
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useState } from 'react';
 
-export default function ContentCom({ dataBig, onPress, selectCheckBox }) {
-    const initialCheckboxStates = dataBig ? new Array(dataBig.length).fill(false) : [];
-    const [checkboxStates, setCheckboxStates] = useState(initialCheckboxStates);
-    console.log(checkboxStates);
+export default function ContentCom({ dataBig, onPress, selectCheckBox, checkboxStates, setCheckboxStates }) {
     let totalReturn = [];
     if (dataBig) {
         for (let i = 0; i < dataBig.length; i++) {
@@ -25,6 +22,7 @@ export default function ContentCom({ dataBig, onPress, selectCheckBox }) {
                         <BouncyCheckbox
                             style={{ left: 8 }}
                             isChecked={checkboxStates[i]}
+                            disableBuiltInState={true}
                             fillColor="#FFF"
                             iconStyle={{ borderColor: "#000", borderWidth: 3 }}
                             onPress={() => {

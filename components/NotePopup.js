@@ -16,15 +16,16 @@ export default function NotePopup({onPress, visible, data, noteIndex, saveCsv}) 
     }
     let textLocations = [];
 
-    const appendTextLocation = (label, text) => {
+    const sendText = (label, text) => {
         textLocations.push(new saveTextLocation(label, text));
     };
 
     let textEditEntries = ["csc_device_desc", "jc_categories", "jc_notes", "jc_pass", "jc_note_date", "jc_ball_in_court"];
+    let multilineOptions = [true, false, true, false, false, false]
     let totalTextEntries = [];
     for (let i = 0; i < textEditEntries.length; i++) {
         totalTextEntries.push(
-            <TextEditEntry label={textEditEntries[i]} textPlaceholder={data[textEditEntries[i]]} sendText={appendTextLocation} key={i}/>
+            <TextEditEntry label={textEditEntries[i]} textPlaceholder={data[textEditEntries[i]]} sendText={sendText} multiline={multilineOptions[i]} key={i}/>
         )
     }
     return (
@@ -35,7 +36,7 @@ export default function NotePopup({onPress, visible, data, noteIndex, saveCsv}) 
                 <View style={styles.headerContainer}>
                     <FontAwesome name="arrow-left" size={25} color="#FFF" style={styles.exitButton} onPress={onPress}/>
                     <Text style={styles.headerText}>Edit Ref {data.ref_no}</Text>
-                    <FontAwesome name="save" size={25} color="#FFF" style={styles.exitButton} onPress={() => saveCsv(textLocations)}/>
+                    <FontAwesome name="save" size={25} color="#FFF" style={styles.exitButton} onPress={() => saveCsv(textLocations, "replace")}/>
                 </View>
                 <View style={styles.bodyContainer}>
                     {totalTextEntries}
