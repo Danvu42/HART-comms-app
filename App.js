@@ -1,8 +1,6 @@
 import { Platform, StyleSheet, View, Text, ScrollView, Pressable } from 'react-native';
 import { useState } from 'react';
 
-import Button from './components/Button.js';
-import ImgButton from './components/imgButton.js'
 import ContentCom from './components/contentCom.js';
 import HotkeyModal from './components/HotkeyModal.js';
 import * as DocumentPicker from 'expo-document-picker';
@@ -11,7 +9,6 @@ import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';
 import NotePopup from './components/NotePopup.js';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useEffect } from 'react';
 
 /**
  * The main component of the commsApp.
@@ -45,19 +42,18 @@ export default function commsApp() {
       copyToCacheDirectory:true,
     });
 
-    // Grabbing the csv file will be different for android and web
-    const uri = FileSystem.cacheDirectory + result.name;
+    result = result.assets[0].uri;
     if (Platform.OS === 'android') {
-      await FileSystem.copyAsync({
-        from: result.uri,
-        to: uri,
+      result = await FileSystem.readAsStringAsync(result, {
+        encoding: 'base64',
       });
-      result = uri;
+      result = 'data:text/csv;base64,' + result;
     }
 
-    // Web will grab the file as a data uri, not using the file system
-    readRemoteFile(result.assets[0].uri, {
+
+    readRemoteFile(result, {
       complete: (results) => {
+        console.log(results);
         if (results && results.data) {
           setCsvData(results.data);
         } else {
@@ -186,7 +182,6 @@ const styles = {
     fontWeight: 'bold',
     color: '#25292e',
     fontFamily: 'Montserrat_800ExtraBold',
-    whiteSpace: 'nowrap',
     color: '#FFF',
   },
 
