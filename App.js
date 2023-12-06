@@ -160,6 +160,7 @@ export default function commsApp() {
           )}
 
         </ScrollView>
+
         <HotkeyModal saveCsv={saveCsv} indices={selectedNotes} />
       </View>
 
@@ -221,7 +222,6 @@ const styles = {
   },
   content: {
     flex: 1,
-    top: 130,
     backgroundColor: '#0E0E0E',
     overflow: 'hidden',
   },
