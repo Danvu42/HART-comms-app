@@ -5,6 +5,7 @@ import ContentCom from './components/contentCom.js';
 import HotkeyModal from './components/HotkeyModal.js';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import Papa from 'papaparse';
 import { readRemoteFile } from 'react-native-csv';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold, Montserrat_800ExtraBold } from '@expo-google-fonts/montserrat';
 import NotePopup from './components/NotePopup.js';
@@ -43,26 +44,40 @@ export default function commsApp() {
     });
 
     result = result.assets[0].uri;
+    
+
     if (Platform.OS === 'android') {
-      result = await FileSystem.readAsStringAsync(result, {
-        encoding: 'base64',
-      });
-      result = 'data:text/csv;base64,' + result;
+      result = await FileSystem.readAsStringAsync(result, {})
+
+      Papa.parse(result, {
+        worker:true,
+        header:true,
+        complete: (results) => {
+          if (results && results.data) {
+            setCsvData(results.data)
+          } else {
+            console.error("failed to load csv");
+          }
+        },
+      })
     }
 
+    if (Platform.OS === 'web') {
 
-    readRemoteFile(result, {
-      complete: (results) => {
-        console.log(results);
-        if (results && results.data) {
-          setCsvData(results.data);
-        } else {
-          console.error('Failed to read CSV file');
-        }
-      },
-      header: true,
-      delimiter: ',',
-    });
+      readRemoteFile(result, {
+        complete: (results) => {
+          console.log(results);
+          if (results && results.data) {
+            setCsvData(results.data);
+          } else {
+            console.error('Failed to read CSV file');
+          }
+        },
+        header: true,
+        delimiter: ',',
+      });
+
+    }
   };
 
   const noteClick = (index) => {
