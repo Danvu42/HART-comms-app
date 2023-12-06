@@ -45,28 +45,29 @@ export default function commsApp() {
 
     result = result.assets[0].uri;
     
-
     if (Platform.OS === 'android') {
       result = await FileSystem.readAsStringAsync(result, {})
-
-      Papa.parse(result, {
-        worker:true,
-        header:true,
-        complete: (results) => {
-          if (results && results.data) {
-            setCsvData(results.data)
-          } else {
-            console.error("failed to load csv");
-          }
-        },
-      })
+    } else {
+      result = atob(result.replace('data:text/csv;base64,', ''));
     }
 
+    Papa.parse(result, {
+      worker:true,
+      header:true,
+      complete: (results) => {
+        if (results && results.data) {
+          setCsvData(results.data)
+        } else {
+          console.error("failed to load csv");
+        }
+      },
+    });
+
+      /*
     if (Platform.OS === 'web') {
 
       readRemoteFile(result, {
         complete: (results) => {
-          console.log(results);
           if (results && results.data) {
             setCsvData(results.data);
           } else {
@@ -78,6 +79,7 @@ export default function commsApp() {
       });
 
     }
+    */
   };
 
   const noteClick = (index) => {
